@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Interactive Resume Builder</title>
+  <style>
+    :root{--accent:#2563eb;--muted:#6b7280;--card:#ffffff;--bg:#f3f4f6}
+    *{box-sizing:border-box}
+    body{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; margin:0;background:var(--bg);color:#111}
+    .app{max-width:1100px;margin:28px auto;padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    header{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+    h1{font-size:20px;margin:0}
+    small{color:var(--muted)}
+
+    /* Form pane */
+    .card{background:var(--card);border-radius:12px;padding:16px;box-shadow:0 6px 18px rgba(16,24,40,0.06)}
+    .form-row{display:flex;gap:10px;margin-bottom:10px}
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    input[type=text], input[type=email], textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #e6e6e6;font-size:14px}
+    textarea{min-height:84px;resize:vertical}
+    .muted{font-size:13px;color:var(--muted)}
+    .small-btn{padding:8px 10px;border-radius:8px;border:none;background:#eef2ff;color:var(--accent);cursor:pointer}
+    .btn{padding:10px 12px;border-radius:10px;background:var(--accent);color:white;border:none;cursor:pointer}
+
+    .section-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+
+    /* dynamic lists */
+    .list {display:flex;flex-direction:column;gap:8px}
+    .list-item{display:flex;gap:8px;align-items:flex-start}
+    .list-item input, .list-item textarea{padding:8px}
+    .del{background:#fee2e2;border:1px solid #fca5a5;color:#b91c1c;padding:8px;border-radius:8px;cursor:pointer}
+
+    /* skills */
+    .skills{display:flex;gap:8px;flex-wrap:wrap}
+    .skill{padding:6px 8px;border-radius:999px;border:1px dashed #d1d5db;font-size:13px;cursor:pointer;transition:all .2s}
+    .skill.selected{background:var(--accent);color:white;border:1px solid transparent}
+
+    /* preview */
+    .preview{padding:18px;border-radius:12px;min-height:480px;display:flex;flex-direction:column;gap:12px}
+    .preview .header{display:flex;gap:12px;align-items:center}
+    .avatar{width:72px;height:72px;border-radius:12px;background:linear-gradient(135deg,#c7d2fe,#a5b4fc);display:flex;align-items:center;justify-content:center;font-weight:700;color:white}
+    .name{font-size:18px;font-weight:700}
+    .meta{color:var(--muted);font-size:13px}
+    .section{padding:10px;border-radius:8px;transition:all .25s}
+    .section h3{margin:0;font-size:14px}
+    .edu-item, .exp-item{font-size:14px}
+
+    /* progress bar */
+    .progress-wrap{height:10px;background:#e6e6e6;border-radius:999px;overflow:hidden}
+    .progress{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),#7c3aed);transition:width .4s}
+    .controls{display:flex;gap:8px;align-items:center}
+
+    /* responsive */
+    @media (max-width:920px){.app{grid-template-columns:1fr;}.preview{min-height:380px}}
+    @media (max-width:420px){.avatar{width:56px;height:56px}.name{font-size:16px}}
+
+    /* print-friendly */
+    @media print{
+      body{background:white}
+      .app{max-width:800px}
+      .form-column, header, .controls{display:none}
+      .preview{box-shadow:none;border:none}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div>
+        <h1>Interactive Resume Builder</h1>
+        <small>Create your resume and preview it live — printable/PDF via Print.</small>
+      </div>
+      <div class="controls">
+        <div style="min-width:260px">
+          <div class="progress-wrap" aria-hidden="true"><div id="progress" class="progress"></div></div>
+          <small class="muted">Form completion</small>
+        </div>
+        <button id="clearBtn" class="small-btn">Clear form</button>
+        <button id="printBtn" class="btn">Download / Print</button>
+      </div>
+    </header>
+
+    <!-- Form column -->
+    <div class="card form-column" id="formCol">
+      <div class="section-title"><strong>Personal</strong></div>
+      <div>
+        <label>Name</label>
+        <input id="name" type="text" placeholder="Your full name" />
+      </div>
+      <div class="form-row">
+        <div style="flex:1">
+          <label>Email</label>
+          <input id="email" type="email" placeholder="name@example.com" />
+        </div>
+        <div style="width:140px">
+          <label>Phone</label>
+          <input id="phone" type="text" placeholder="+91 9xxxx" />
+        </div>
+      </div>
+      <div>
+        <label>Profile Summary</label>
+        <textarea id="summary" placeholder="Short profile summary..."></textarea>
+      </div>
+
+      <div style="height:8px"></div>
+
+      <div class="section-title"><strong>Education</strong><button id="addEdu" class="small-btn">Add</button></div>
+      <div id="educations" class="list">
+        <!-- dynamic -->
+      </div>
+
+      <div style="height:8px"></div>
+      <div class="section-title"><strong>Experience</strong><button id="addExp" class="small-btn">Add</button></div>
+      <div id="exps" class="list"></div>
+
+      <div style="height:8px"></div>
+      <div class="section-title"><strong>Skills</strong><span class="muted">(click to toggle)</span></div>
+      <div id="skillbox" class="skills">
+        <span class="skill">JavaScript</span>
+        <span class="skill">HTML</span>
+        <span class="skill">CSS</span>
+        <span class="skill">C++</span>
+        <span class="skill">Python</span>
+        <span class="skill">React</span>
+        <span class="skill">SQL</span>
+        <span class="skill">DSA</span>
+      </div>
+
+      <div style="height:8px"></div>
+      <div class="section-title"><strong>Other</strong></div>
+      <div>
+        <label>Portfolio / LinkedIn</label>
+        <input id="link" type="text" placeholder="https://..." />
+      </div>
+
+    </div>
+
+    <!-- Preview column -->
+    <div class="card preview" id="preview">
+      <div class="header">
+        <div class="avatar" id="avatar">SP</div>
+        <div style="flex:1">
+          <div class="name" id="pName">Your Name</div>
+          <div class="meta" id="pMeta">email • phone • location</div>
+        </div>
+        <div style="text-align:right;color:var(--muted);font-size:13px">Interactive Resume</div>
+      </div>
+
+      <div class="section" id="pSummary">
+        <h3>Profile</h3>
+        <div class="muted" id="pSummaryText">Short summary appears here as you type.</div>
+      </div>
+
+      <div class="section" id="pSkills">
+        <h3>Skills</h3>
+        <div id="pSkillsList" class="muted">—</div>
+      </div>
+
+      <div class="section" id="pEdu">
+        <h3>Education</h3>
+        <div id="pEduList" class="muted">Add your education</div>
+      </div>
+
+      <div class="section" id="pExp">
+        <h3>Experience</h3>
+        <div id="pExpList" class="muted">Add your experience</div>
+      </div>
+
+      <div style="margin-top:auto;display:flex;justify-content:space-between;align-items:center">
+        <div class="muted">Tip: Use the download/print button to save as PDF. Use print settings -> Background graphics for color.</div>
+        <div class="muted">Last updated: <span id="lastUp">Never</span></div>
+      </div>
+    </div>
+
+  </div>
+
+<script>
+// Utility
+function el(tag, attrs){const e=document.createElement(tag);if(attrs)for(const k in attrs)e.setAttribute(k,attrs[k]);return e}
+
+// state
+const state = {edu:[], exp:[], skills: new Set()}
+
+// DOM refs
+const educations = document.getElementById('educations')
+const exps = document.getElementById('exps')
+const addEdu = document.getElementById('addEdu')
+const addExp = document.getElementById('addExp')
+const nameI = document.getElementById('name')
+const emailI = document.getElementById('email')
+const phoneI = document.getElementById('phone')
+const summaryI = document.getElementById('summary')
+const linkI = document.getElementById('link')
+const skillbox = document.getElementById('skillbox')
+const pName = document.getElementById('pName')
+const pMeta = document.getElementById('pMeta')
+const avatar = document.getElementById('avatar')
+const pSummaryText = document.getElementById('pSummaryText')
+const pSkillsList = document.getElementById('pSkillsList')
+const pEduList = document.getElementById('pEduList')
+const pExpList = document.getElementById('pExpList')
+const lastUp = document.getElementById('lastUp')
+const progress = document.getElementById('progress')
+
+// interactions
+function createEduItem(data){
+  const idx = state.edu.length
+  const wrapper = el('div',{class:'list-item'})
+  const left = el('div',{style:'flex:1'})
+  const school = el('input')
+  school.placeholder='College / School'
+  school.value=data?.school||''
+  const degree = el('input')
+  degree.placeholder='Degree, eg. B.Tech, 2024'
+  degree.value=data?.degree||''
+  const note = el('textarea')
+  note.placeholder='Details (optional)'
+  note.value=data?.note||''
+  left.appendChild(school);left.appendChild(degree);left.appendChild(note)
+  const del = el('button',{class:'del'})
+  del.innerText='Remove'
+  del.addEventListener('click',()=>{
+    const i = Array.from(educations.children).indexOf(wrapper)
+    state.edu.splice(i,1)
+    renderForm();
+    syncPreview();
+  })
+  wrapper.appendChild(left);wrapper.appendChild(del)
+  return wrapper
+}
+
+function createExpItem(data){
+  const wrapper = el('div',{class:'list-item'})
+  const left = el('div',{style:'flex:1'})
+  const title = el('input')
+  title.placeholder='Role and Company'
+  title.value=data?.title||''
+  const duration = el('input')
+  duration.placeholder='Duration e.g. Jun 2023 - Present'
+  duration.value=data?.duration||''
+  const desc = el('textarea')
+  desc.placeholder='Short bullets or tasks'
+  desc.value=data?.desc||''
+  left.appendChild(title);left.appendChild(duration);left.appendChild(desc)
+  const del = el('button',{class:'del'})
+  del.innerText='Remove'
+  del.addEventListener('click',()=>{
+    const i = Array.from(exps.children).indexOf(wrapper)
+    state.exp.splice(i,1)
+    renderForm();
+    syncPreview();
+  })
+  wrapper.appendChild(left);wrapper.appendChild(del)
+  return wrapper
+}
+
+function renderForm(){
+  educations.innerHTML=''
+  exps.innerHTML=''
+  state.edu.forEach(d=>educations.appendChild(createEduItem(d)))
+  state.exp.forEach(d=>exps.appendChild(createExpItem(d)))
+}
+
+addEdu.addEventListener('click',()=>{state.edu.push({});renderForm()})
+addExp.addEventListener('click',()=>{state.exp.push({});renderForm()})
+
+// skill toggles
+skillbox.addEventListener('click',(e)=>{
+  if(!e.target.classList.contains('skill'))return
+  e.target.classList.toggle('selected')
+  const val=e.target.textContent
+  if(e.target.classList.contains('selected')) state.skills.add(val)
+  else state.skills.delete(val)
+  syncPreview()
+})
+
+// live sync
+function syncPreview(){
+  pName.textContent = nameI.value || 'Your Name'
+  pSummaryText.textContent = summaryI.value || 'Short summary appears here as you type.'
+  const metaParts = []
+  if(emailI.value) metaParts.push(emailI.value)
+  if(phoneI.value) metaParts.push(phoneI.value)
+  if(linkI.value) metaParts.push(linkI.value)
+  pMeta.textContent = metaParts.join(' • ') || 'email • phone'
+  // avatar initials
+  const initials = (nameI.value || 'SP').split(' ').map(s=>s[0]).slice(0,2).join('').toUpperCase()
+  avatar.textContent = initials || 'SP'
+
+  // skills
+  pSkillsList.textContent = state.skills.size? Array.from(state.skills).join(', '): '—'
+
+  // education
+  if(state.edu.length===0) pEduList.textContent='Add your education'
+  else{
+    pEduList.innerHTML=''
+    state.edu.forEach((e,i)=>{
+      const node = document.createElement('div'); node.className='edu-item';
+      const school = (educations.children[i]?.querySelector('input')?.value)|| ''
+      const degree = (educations.children[i]?.querySelectorAll('input')[1]?.value)|| ''
+      const note = (educations.children[i]?.querySelector('textarea')?.value)|| ''
+      node.innerHTML = `<strong>${school||degree||'—'}</strong><div class="muted">${degree||''}</div><div>${note||''}</div>`
+      pEduList.appendChild(node)
+    })
+  }
+
+  // experience
+  if(state.exp.length===0) pExpList.textContent='Add your experience'
+  else{
+    pExpList.innerHTML=''
+    state.exp.forEach((e,i)=>{
+      const node = document.createElement('div'); node.className='exp-item';
+      const title = (exps.children[i]?.querySelector('input')?.value)|| ''
+      const duration = (exps.children[i]?.querySelectorAll('input')[1]?.value)|| ''
+      const desc = (exps.children[i]?.querySelector('textarea')?.value)|| ''
+      node.innerHTML = `<strong>${title||'—'}</strong><div class="muted">${duration||''}</div><div>${desc||''}</div>`
+      pExpList.appendChild(node)
+    })
+  }
+
+  lastUpdated()
+  updateProgress()
+}
+
+function lastUpdated(){
+  const now = new Date(); lastUp.textContent = now.toLocaleString()
+}
+
+// compute simple completion % based on fields filled
+function updateProgress(){
+  const fields = [nameI.value, emailI.value, phoneI.value, summaryI.value, linkI.value]
+  const filled = fields.filter(v=>v && v.trim().length>0).length
+  // education and exp count matter too
+  const extras = Math.min(2, state.edu.length) + Math.min(2, state.exp.length) + (state.skills.size>0?1:0)
+  const score = Math.min(1, (filled + extras)/8)
+  progress.style.width = Math.round(score*100) + '%'
+}
+
+// wire up form inputs to preview
+[nameI,emailI,phoneI,summaryI,linkI].forEach(inp=>inp.addEventListener('input',syncPreview))
+
+// react to dynamic inputs changes (delegate)
+educations.addEventListener('input',syncPreview)
+exps.addEventListener('input',syncPreview)
+
+// clear form
+const clearBtn = document.getElementById('clearBtn')
+clearBtn.addEventListener('click',()=>{
+  if(!confirm('Clear the entire form?')) return
+  // reset inputs
+  nameI.value='';emailI.value='';phoneI.value='';summaryI.value='';linkI.value=''
+  state.edu = []; state.exp = []; state.skills = new Set()
+  // unselect skill nodes
+  document.querySelectorAll('.skill').forEach(s=>s.classList.remove('selected'))
+  renderForm(); syncPreview();
+})
+
+// print / download
+const printBtn = document.getElementById('printBtn')
+printBtn.addEventListener('click',()=>{
+  // ensure preview is up-to-date
+  syncPreview()
+  // open print dialog - user can save as PDF
+  window.print()
+})
+
+// initial sample entries to show behaviour
+state.edu.push({school:'XYZ Institute of Technology',degree:'B.Tech Computer Science (2023 - 2027)',note:'CGPA: —, Relevant coursework: DSA, DBMS'})
+state.exp.push({title:'Intern at ABC Co.',duration:'Jun 2024 - Aug 2024',desc:'Worked on web features and small automation tasks'})
+renderForm();
+// minor animation for page load
+setTimeout(()=>{document.querySelectorAll('.card').forEach(c=>c.style.transform='translateY(0)')},200)
+syncPreview()
+
+// accessibility: keyboard add
+document.addEventListener('keydown',(e)=>{
+  if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='d'){
+    e.preventDefault(); window.print()
+  }
+})
+
+</script>
+</body>
+</html>
