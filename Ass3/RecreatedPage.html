@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Internship Opportunities</title>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(to bottom, #fef6f9, #f0f0ff);
+      color: #333;
+      display: flex;
+      justify-content: center;
+      padding: 50px 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      width: 100%;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    .header h1 {
+      font-size: 3rem;
+      color: #6a1b9a;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .header p {
+      font-size: 1.2rem;
+      color: #7b6f8a;
+    }
+
+    .cards {
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+    }
+
+    .card {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      background: linear-gradient(145deg, #ffffff, #f9f0ff);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+      transition: all 0.4s ease;
+      position: relative;
+    }
+
+    /* Alternate card layout */
+    .card:nth-child(even) {
+      flex-direction: row-reverse;
+      background: linear-gradient(145deg, #ffffff, #f0f9ff);
+    }
+
+    .card-content {
+      flex: 1;
+      z-index: 1;
+    }
+
+    .card h3 {
+      font-size: 1.6rem;
+      color: #4a148c;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+
+    .card ul {
+      list-style: none;
+      font-size: 1rem;
+      color: #555;
+      line-height: 1.6;
+    }
+
+    .card ul li strong {
+      color: #6a1b9a;
+    }
+
+    .btn {
+      display: inline-block;
+      background: #6a1b9a;
+      color: white;
+      text-decoration: none;
+      padding: 12px 28px;
+      border-radius: 50px;
+      font-weight: 500;
+      margin-top: 20px;
+      transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+      background: #4a148c;
+      transform: translateY(-4px) scale(1.05);
+      box-shadow: 0 8px 20px rgba(106,27,154,0.3);
+    }
+
+    .card:hover {
+      transform: translateY(-5px) scale(1.02);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+    }
+
+    @media (max-width: 900px) {
+      .card {
+        flex-direction: column !important;
+        text-align: center;
+      }
+
+      .card:nth-child(even) {
+        flex-direction: column !important;
+      }
+
+      .btn {
+        margin-top: 15px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <section class="container">
+    <div class="header">
+      <h1>Internship Opportunities</h1>
+      <p>Kickstart your career with hands-on experience in leading technologies</p>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <div class="card-content">
+          <h3>Web Development Internship</h3>
+          <ul>
+            <li><strong>Duration:</strong> 1-2 months</li>
+            <li><strong>Location:</strong> Virtual</li>
+            <li><strong>Stipend:</strong> -</li>
+            <li><strong>Start Date:</strong> 05/11/2023</li>
+          </ul>
+          <a href="https://example.com" class="btn">View Details</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-content">
+          <h3>App Development Internship</h3>
+          <ul>
+            <li><strong>Duration:</strong> 1-2 months</li>
+            <li><strong>Location:</strong> Virtual</li>
+            <li><strong>Stipend:</strong> -</li>
+            <li><strong>Start Date:</strong> 05/11/2023</li>
+          </ul>
+          <a href="https://example.com" class="btn">View Details</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-content">
+          <h3>Python Programming Internship</h3>
+          <ul>
+            <li><strong>Duration:</strong> 1-2 months</li>
+            <li><strong>Location:</strong> Virtual</li>
+            <li><strong>Stipend:</strong> -</li>
+            <li><strong>Start Date:</strong> 05/11/2023</li>
+          </ul>
+          <a href="https://example.com" class="btn">View Details</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-content">
+          <h3>Java Programming Internship</h3>
+          <ul>
+            <li><strong>Duration:</strong> 1-2 months</li>
+            <li><strong>Location:</strong> Virtual</li>
+            <li><strong>Stipend:</strong> -</li>
+            <li><strong>Start Date:</strong> 05/11/2023</li>
+          </ul>
+          <a href="https://example.com" class="btn">View Details</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</body>
+</html>
