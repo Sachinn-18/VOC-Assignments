@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Editkaro — Portfolio</title>
+  <meta name="description" content="Editkaro.in — Social media marketing & video editing agency portfolio" />
+
+  <!-- FONT: DM Sans (MongoDB-like aesthetic) -->
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- FAVICON -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90'%3E%E2%9A%BD%3C/text%3E%3C/svg%3E">
+
+  <style>
+    /* ---------- RESET ---------- */
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body,#app{height:100%}
+    body{
+      font-family:'DM Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height:1.5;
+      color:#0f1724;
+      background:linear-gradient(180deg,#fbfdff 0%,#f7fbff 100%);
+      -webkit-font-smoothing:antialiased;
+    }
+
+    h1,h2,h3,h4,h5,h6 {
+      font-weight:600;
+      letter-spacing:-0.3px;
+    }
+
+    p, li, button, input, textarea {
+      font-weight:400;
+      letter-spacing:-0.2px;
+    }
+
+    /* ---------- LAYOUT ---------- */
+    .container{max-width:1200px;margin:32px auto;padding:0 20px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:48px;height:48px;border-radius:8px;background:linear-gradient(135deg,#ff7a7a,#ffb86b);display:grid;place-items:center;color:white;font-weight:700}
+    .brand h1{font-size:18px}
+    nav{display:flex;gap:12px;align-items:center}
+    .btn{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border-radius:10px;border:0;background:rgba(15,23,36,0.03);cursor:pointer}
+
+    /* ---------- HERO ---------- */
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:28px;margin-top:28px;align-items:center}
+    .hero .intro h2{font-size:34px;margin-bottom:12px}
+    .hero p.lead{color:#334155}
+    .cta-row{margin-top:18px;display:flex;gap:12px}
+    .primary{background:linear-gradient(90deg,#6b21a8,#0ea5a0);color:#fff;padding:10px 16px;border-radius:12px}
+    .ghost{background:transparent;border:1px solid rgba(15,23,36,0.06);padding:10px 14px;border-radius:12px}
+
+    /* preview card */
+    .preview-card{border-radius:14px;padding:14px;background:linear-gradient(180deg,#fff,#fbfdff);box-shadow:0 6px 20px rgba(16,24,40,0.06);display:flex;flex-direction:column;gap:12px}
+    .stats{display:flex;gap:12px;font-size:13px;color:#475569}
+
+    /* ---------- FILTERS ---------- */
+    .filters{display:flex;gap:10px;flex-wrap:wrap;margin-top:30px}
+    .filter{padding:8px 12px;border-radius:999px;border:1px solid rgba(15,23,36,0.06);cursor:pointer;background:transparent}
+    .filter.active{background:#eef2ff;border-color:#c7b3ff;color:#4f46e5}
+
+    /* ---------- GRID ---------- */
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:18px}
+    .card{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 6px 20px rgba(2,6,23,0.04);cursor:pointer;transition:transform .28s ease, box-shadow .28s ease}
+    .card:hover{transform:translateY(-8px);box-shadow:0 18px 40px rgba(2,6,23,0.09)}
+    .thumb{position:relative;padding-top:56.25%;background:#111}
+    .thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+    .meta{padding:12px}
+    .meta h3{font-size:15px;margin-bottom:6px}
+    .meta p{font-size:13px;color:#64748b}
+
+    /* preview overlay on hover */
+    .thumb .play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(255,255,255,0.9);padding:10px;border-radius:999px;display:grid;place-items:center;font-weight:700}
+
+    /* ---------- LIGHTBOX ---------- */
+    .lightbox{position:fixed;inset:0;background:rgba(2,6,23,0.6);display:none;place-items:center;padding:20px;z-index:50}
+    .lightbox.open{display:grid}
+    .lightbox .panel{width:min(1100px,100%);background:#fff;border-radius:12px;overflow:hidden}
+    .lightbox iframe{width:100%;height:64vh;border:0}
+    .close{position:absolute;right:18px;top:18px;background:#fff;border-radius:999px;padding:6px;cursor:pointer}
+
+    /* ---------- ABOUT + CONTACT ---------- */
+    .split{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:28px}
+    .card--soft{padding:18px;border-radius:12px;background:linear-gradient(180deg,#ffffff,#fbfdff);box-shadow:0 6px 20px rgba(2,6,23,0.04)}
+    form .row{display:flex;gap:8px;margin-bottom:10px}
+    form input, form textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(2,6,23,0.06)}
+
+    /* ---------- THEME TOGGLE / NIGHT ---------- */
+    .theme-toggle{display:inline-flex;align-items:center;gap:8px}
+    body.dark{background:linear-gradient(180deg,#071226 0%,#021018 100%);color:#e6eef6}
+    body.dark .card, body.dark .card--soft, body.dark .preview-card{background:#061125}
+    body.dark .meta p, body.dark p.lead{color:#98a8c5}
+    body.dark .logo{background:linear-gradient(135deg,#09b3a3,#6b21a8)}
+    body.dark .btn{background:rgba(230,238,246,0.03);color:#e6eef6}
+    body.dark .filter{border-color:rgba(230,238,246,0.06);color:#e6eef6}
+    body.dark .filter.active{background:rgba(79,70,229,0.1);border-color:#c7b3ff;color:#c7b3ff}
+    body.dark .ghost{border-color:rgba(230,238,246,0.06);color:#e6eef6}
+    body.dark form input, body.dark form textarea{border-color:rgba(230,238,246,0.06);background:#061125;color:#e6eef6}
+    body.dark .muted{color:#98a8c5}
+
+    /* Responsive */
+    @media (max-width:1000px){
+      .hero{grid-template-columns:1fr}
+      .grid{grid-template-columns:repeat(2,1fr)}
+    }
+    @media (max-width:640px){
+      .grid{grid-template-columns:1fr}
+      header{gap:8px}
+      .brand h1{font-size:15px}
+      .hero .intro h2{font-size:26px}
+      .split{grid-template-columns:1fr}
+    }
+
+    /* small utility */
+    .muted{color:#64748b;font-size:13px}
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <div class="container">
+      <header>
+        <div class="brand">
+          <div class="logo">EK</div>
+          <div>
+            <h1>Editkaro</h1>
+            <div class="muted">Social media marketing & video editing</div>
+          </div>
+        </div>
+        <nav>
+          <button class="btn" id="themeBtn" aria-pressed="false">🌙 Theme</button>
+          <a class="btn" href="#contact">Contact</a>
+        </nav>
+      </header>
+
+      <section class="hero">
+        <div class="intro">
+          <h2>We turn raw footage into scroll-stopping content — fast.</h2>
+          <p class="lead">Short-form, long-form, gaming edits, color grading, documentary style — we craft content that converts. Explore curated categories and preview edits instantly.</p>
+          <div class="cta-row">
+            <button class="primary" id="hireBtn">Hire us — Get quote</button>
+            <button class="ghost" id="viewAll">View examples</button>
+          </div>
+
+          <div class="filters" id="filters">
+            <button class="filter active" data-cat="all">All</button>
+            <button class="filter" data-cat="short">Short-form</button>
+            <button class="filter" data-cat="long">Long-form</button>
+            <button class="filter" data-cat="gaming">Gaming</button>
+            <button class="filter" data-cat="ads">eCommerce Ads</button>
+            <button class="filter" data-cat="color">Color Grading</button>
+            <button class="filter" data-cat="anime">Anime Style</button>
+          </div>
+        </div>
+
+        <div class="preview-card" aria-hidden="false">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div class="muted">Featured project</div>
+              <strong>Cricket Highlights — Viral Short</strong>
+            </div>
+            <div class="stats">
+              <div>⏱ 0:35</div>
+              <div>📈 1.2M views</div>
+            </div>
+          </div>
+
+          <div style="border-radius:10px;overflow:hidden;margin-top:10px">
+            <iframe width="100%" height="220" src="https://www.youtube.com/embed/5O0YDHiosD0" title="YouTube video" frameborder="0" allowfullscreen></iframe>
+          </div>
+
+          <div style="display:flex;gap:10px;margin-top:10px">
+            <button class="btn">Download Reel</button>
+            <button class="btn">Share</button>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="grid" id="portfolio"></div>
+      </section>
+
+      <div class="lightbox" id="lightbox" aria-hidden="true">
+        <div class="panel">
+          <iframe src="" allowfullscreen id="lightVideo"></iframe>
+        </div>
+        <button class="close" id="closeLight">✕</button>
+      </div>
+
+      <section class="split">
+        <div class="card--soft">
+          <h3>About Editkaro</h3>
+          <p class="muted">We are a small team of editors and storytellers focused on high-engagement short-form videos and polished long-form storytelling. We handle editing, color grading, motion graphics and campaign-ready ad edits.</p>
+          <ul style="margin-top:12px;list-style:disc;padding-left:18px;color:#334155">
+            <li>Fast turnaround — 24-72 hours for short-form.</li>
+            <li>Revisions included (2 rounds) and structured feedback form.</li>
+            <li>Delivery-ready formats for Instagram, YouTube, and TikTok.</li>
+          </ul>
+        </div>
+
+        <div class="card--soft" id="contact">
+          <h3>Contact / Request quote</h3>
+          <form id="contactForm">
+            <div class="row">
+              <input type="text" id="name" placeholder="Your name" required />
+              <input type="email" id="email" placeholder="Email" required />
+            </div>
+            <input type="text" id="project" placeholder="Project type (short/long/gaming/ads)" required />
+            <textarea id="message" rows="4" placeholder="Brief description & deadline"></textarea>
+            <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
+              <button class="primary" type="submit">Send request</button>
+              <div class="muted">Or mail us at hello@editkaro.in</div>
+            </div>
+            <div id="formMsg" class="muted" style="margin-top:8px"></div>
+          </form>
+        </div>
+      </section>
+
+      <footer style="margin-top:30px;padding:18px 0;text-align:center;color:#64748b;font-size:13px">
+        © Editkaro — Made with ❤. Best portfolio will be featured on VaultOfCodes.
+      </footer>
+
+    </div>
+  </div>
+
+  <script>
+    const VIDEOS = [
+      {id:'v1',title:'Cricket Highlights (Short)',desc:'Energetic cuts, motion-graphic overlays',cat:'short',thumb:'https://picsum.photos/seed/cricket/800/450',yt:'https://www.youtube.com/embed/5O0YDHiosD0'},
+      {id:'v2',title:'Brand Ad — eCommerce (30s)',desc:'Product-focused ad with punchy edits',cat:'ads',thumb:'https://picsum.photos/seed/ad/800/450',yt:'https://www.youtube.com/embed/dQw4w9WgXcQ'},
+      {id:'v3',title:'Gaming Montage',desc:'Montage with synced cuts & VFX',cat:'gaming',thumb:'https://picsum.photos/seed/gaming/800/450',yt:'https://www.youtube.com/embed/5O0YDHiosD0'},
+      {id:'v4',title:'Documentary Snippet',desc:'Color-graded emotional sequence',cat:'long',thumb:'https://picsum.photos/seed/doc/800/450',yt:'https://www.youtube.com/embed/5O0YDHiosD0'},
+      {id:'v5',title:'Anime Style Promo',desc:'Stylised transitions & frame blend',cat:'anime',thumb:'https://picsum.photos/seed/anime/800/450',yt:'https://www.youtube.com/embed/5O0YDHiosD0'},
+      {id:'v6',title:'Color Grade Reel',desc:'Before / After split comparisons',cat:'color',thumb:'https://picsum.photos/seed/color/800/450',yt:'https://www.youtube.com/embed/5O0YDHiosD0'},
+    ];
+
+    const portfolio = document.getElementById('portfolio');
+    function renderGrid(list){
+      portfolio.innerHTML = '';
+      list.forEach(v=>{
+        const card = document.createElement('article');
+        card.className='card';
+        card.tabIndex=0;
+        card.setAttribute('data-cat',v.cat);
+        card.innerHTML = `
+          <div class="thumb" aria-hidden="true">
+            <img src="${v.thumb}" alt="${v.title} thumbnail" loading="lazy">
+            <div class="play">▶</div>
+          </div>
+          <div class="meta">
+            <h3>${v.title}</h3>
+            <p>${v.desc}</p>
+          </div>
+        `;
+        card.addEventListener('click',()=>openLightbox(v.yt));
+        portfolio.appendChild(card);
+      });
+    }
+    renderGrid(VIDEOS);
+
+    const filterBtns = Array.from(document.querySelectorAll('.filter'));
+    filterBtns.forEach(btn=>btn.addEventListener('click',()=>{
+      filterBtns.forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      const cat = btn.dataset.cat;
+      if(cat==='all') renderGrid(VIDEOS);
+      else renderGrid(VIDEOS.filter(v=>v.cat===cat));
+    }));
+
+    const lightbox=document.getElementById('lightbox');
+    const lightVideo=document.getElementById('lightVideo');
+    const closeLight=document.getElementById('closeLight');
+    function openLightbox(src){
+      lightVideo.src = src+'?rel=0&autoplay=1';
+      lightbox.classList.add('open');
+      lightbox.setAttribute('aria-hidden','false');
+    }
+    function closeLB(){
+      lightVideo.src='';
+      lightbox.classList.remove('open');
+      lightbox.setAttribute('aria-hidden','true');
+    }
+    closeLight.addEventListener('click',closeLB);
+    lightbox.addEventListener('click',(e)=>{if(e.target===lightbox)closeLB();});
+
+    const themeBtn=document.getElementById('themeBtn');
+    function setTheme(dark){
+      document.body.classList.toggle('dark',dark);
+      themeBtn.textContent=dark?'☀ Light':'🌙 Dark';
+      themeBtn.setAttribute('aria-pressed',dark);
+      localStorage.setItem('editkaro_theme',dark?'dark':'light');
+    }
+    const saved=localStorage.getItem('editkaro_theme');
+    setTheme(saved==='dark');
+    themeBtn.addEventListener('click',()=>setTheme(!document.body.classList.contains('dark')));
+
+    const form=document.getElementById('contactForm');
+    const formMsg=document.getElementById('formMsg');
+    form.addEventListener('submit',(e)=>{
+      e.preventDefault();
+      const data={
+        name:document.getElementById('name').value,
+        email:document.getElementById('email').value,
+        project:document.getElementById('project').value,
+        message:document.getElementById('message').value,
+      };
+      formMsg.textContent='Thanks '+data.name+" — we'll get back within 24 hours. (This is a demo contact handler.)";
+      form.reset();
+    });
+
+    document.addEventListener('keydown',e=>{if(e.key==='Escape')closeLB();});
+    portfolio.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.closest('.card')){e.target.closest('.card').click();}});
+    document.getElementById('hireBtn').addEventListener('click', () => {
+      // Handle hire button click, e.g., scroll to contact or open modal
+      document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
+    });
+  </script>
+</body>
+</html>
